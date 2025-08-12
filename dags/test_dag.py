@@ -6,7 +6,7 @@ from airflow import DAG
 from airflow.operators.empty import EmptyOperator
 from airflow.operators.python import PythonOperator
 
-sys.path.append("/opt/airflow/project_config")
+sys.path.append("/opt/airflow/internal/project_config")
 
 from config import DEFAULT_ARGS
 

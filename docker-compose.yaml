@@ -74,7 +74,10 @@ x-airflow-common: &airflow-common
     - ${AIRFLOW_PROJ_DIR:-.}/logs:/opt/airflow/logs
     - ${AIRFLOW_PROJ_DIR:-.}/config:/opt/airflow/config
     - ${AIRFLOW_PROJ_DIR:-.}/plugins:/opt/airflow/plugins
-    - ${AIRFLOW_PROJ_DIR:-.}/project_config:/opt/airflow/project_config
+    - ${AIRFLOW_PROJ_DIR:-.}/internal/project_config:/opt/airflow/internal/project_config
+    - ${AIRFLOW_PROJ_DIR:-.}/internal/database:/opt/airflow/internal/database
+    - ${AIRFLOW_PROJ_DIR:-.}/internal/scripts:/opt/airflow/internal/scripts
+    - ${AIRFLOW_PROJ_DIR:-.}/.env:/opt/airflow/.env
   user: '${AIRFLOW_UID:-50000}:0'
   depends_on: &airflow-common-depends-on
     redis:
