@@ -18,8 +18,9 @@ ENV/
 .DS_Store
 Thumbs.db
 
-# Ignore logs
+# Ignore logs and data
 logs/
+data/
 *.log
 
 # Ignore temporary files
@@ -29,3 +30,12 @@ logs/
 # Ignore documentation
 *.md
 README*
+LICENSE
+
+# Ignore IDE files
+.vscode/
+.idea/
+
+# Ignore environment files
+.env
+.env.*
