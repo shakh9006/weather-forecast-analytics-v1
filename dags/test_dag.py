@@ -1,14 +1,23 @@
+import logging
+import sys
 from datetime import datetime
 
 from airflow import DAG
 from airflow.operators.empty import EmptyOperator
 from airflow.operators.python import PythonOperator
 
+sys.path.append("/opt/airflow/internal/project_config")
+
+from config import DEFAULT_ARGS
+
 def print_hello():
+    logging.info("Start running test_dag")
     print("Run successfully!!!")
+    logging.info("End running test_dag")
 
 with DAG(
     dag_id="test_dag",
+    default_args=DEFAULT_ARGS,
     start_date=datetime(2025, 8, 12),
     schedule=None,
     catchup=False,
