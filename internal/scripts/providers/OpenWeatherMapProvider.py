@@ -11,7 +11,7 @@ class OpenWeatherMapProvider(ProviderAdapter):
         self.api_key = api_key
         self.countries = countries
 
-    def fetch_forecast(self, start_date: str, end_date: str) -> List[Dict[str, Any]]:
+    def fetch_forecast(self, start_date: str, end_date: str) -> List[Any]:
         logging.info(f"Fetching forecast from OpenWeatherMap provider for {start_date} to {end_date}")
         try:
             response_data = []
@@ -22,8 +22,6 @@ class OpenWeatherMapProvider(ProviderAdapter):
                     "lat": country["latitude"],
                     "lon": country["longitude"],
                     "apikey": self.api_key,
-                    "units": "metric",
-                    "lang": "en",
                 }
 
                 response = requests.get(api_url, params=params)
@@ -37,7 +35,27 @@ class OpenWeatherMapProvider(ProviderAdapter):
             logging.error(f"Error occurred while fetching forecast from OpenWeatherMap provider: {e}")
             return []
 
-    def fetch_current_weather(self, request: Dict[str, Any]) -> Dict[str, Any]:
-        pass
+    def fetch_current_weather(self, start_date: str, end_date: str) -> List[Any]:
+        logging.info(f"Fetching current weather from OpenWeatherMap provider for {start_date} to {end_date}")
+        try:
+            response_data = []
+            api_url = "https://api.openweathermap.org/data/2.5/weather"
+            for country in self.countries:
+                params = {
+                    "lat": country["latitude"],
+                    "lon": country["longitude"],
+                    "apikey": self.api_key,
+                }
+
+                response = requests.get(api_url, params=params)
+                response.raise_for_status()
+                data = response.json()
+                logging.info(f"Response from OpenWeatherMap provider for country {country['country_name']}")
+                response_data.append(data)
+                time.sleep(2)
+            return response_data
+        except Exception as e:
+            logging.error(f"Error occurred while fetching current weather from OpenWeatherMap provider: {e}")
+            return []
 
     
