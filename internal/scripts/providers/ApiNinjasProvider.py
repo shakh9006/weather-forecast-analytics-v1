@@ -1,5 +1,6 @@
 import requests
 import logging
+import time
 
 from typing import Dict, Any, List
 from .base.ProviderAdapter import ProviderAdapter
@@ -31,6 +32,7 @@ class ApiNinjasProvider(ProviderAdapter):
                 data = response.json()
                 logging.info(f"Response from ApiNinjas provider for country {country['country_name']}")
                 response_data.append(data)
+                time.sleep(2)
 
             return response_data
         except Exception as e:
