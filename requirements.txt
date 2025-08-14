@@ -1,18 +1,9 @@
-# Weather Forecast Analytics Dependencies
-# Core data science packages
-pandas
-numpy
-requests
-scikit-learn
-matplotlib
-seaborn
-plotly
-python-dotenv
-
-# Database connectivity
-# Note: psycopg2-binary is already included in base Airflow image
-# sqlalchemy is already included in base Airflow image
-
-# Airflow providers (may already be included)
-# apache-airflow-providers-postgres
-# apache-airflow-providers-http
+argon2-cffi==25.1.0
+argon2-cffi-bindings==25.1.0
+certifi==2025.8.3
+cffi==1.17.1
+minio==7.2.16
+pycparser==2.22
+pycryptodome==3.23.0
+typing_extensions==4.14.1
+urllib3==2.5.0

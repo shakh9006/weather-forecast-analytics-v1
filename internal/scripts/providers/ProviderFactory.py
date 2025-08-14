@@ -1,4 +1,10 @@
 import logging
+import sys
+
+sys.path.append("/opt/airflow/internal")
+
+from scripts.pandas_process import process_data_with_pandas
+from scripts.minio_process import save_to_minio
 
 from typing import Dict, Any, List
 from .OpenWeatherMapProvider import OpenWeatherMapProvider
@@ -50,8 +56,17 @@ class ProviderFactory:
         logging.info(f"Running all providers for {start_date} to {end_date}")
         try:
             for provider_name, provider in self.adapters.items():
+                # Fetch forecast data
                 response_data = provider.fetch_forecast(start_date, end_date)
-                logging.info(f"Response data for provider {provider_name}: {response_data}")
+                logging.info(f"Response data for provider {provider_name}")
+                df = process_data_with_pandas(response_data)
+                save_to_minio(df, start_date, end_date, provider_name, "weather_forecast")
+
+                # Fetch current weather data
+                response_data = provider.fetch_current_weather(start_date, end_date)
+                logging.info(f"Response data for provider {provider_name}")
+                df = process_data_with_pandas(response_data)
+                save_to_minio(df, start_date, end_date, provider_name, "weather_current")
         except Exception as e:
             logging.error(f"Error running provider {provider_name}: {e}")
             raise e
