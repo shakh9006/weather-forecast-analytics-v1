@@ -1,32 +1,29 @@
+import sys
+
+sys.path.append("/opt/airflow/internal")
+
+from project_config.config import OPEN_WEATHER_MAP_API_KEY, ACCU_WEATHER_API_KEY, WEATHER_BIT_API_KEY, TOMORROW_IO_API_KEY, API_NINJAS_API_KEY
+
 def get_providers():
-    """
-        Mp88VEYJ1gE4vkS1gt23KQ==fKvvb7b69korttTS
-
-        https://api.api-ninjas.com/v1/weatherforecast?city=London
-
-        "location": "{city_code}",
-        "timesteps": "1d",
-        "apikey": "{API key}",
-    """
     return {
         "openweathermap": {
             "provider_name": "OpenWeatherMap",
-            "api_key": "3bda580d6ee8a9aed19d1c4b1e0578db",
+            "api_key": OPEN_WEATHER_MAP_API_KEY,
         },
         "accuweather": {
             "provider_name": "AccuWeather",
-            "api_key": "h4fxOBLhc20UnOuYtq2AAdzCERrfsCqh",
+            "api_key": ACCU_WEATHER_API_KEY,
         },
         "weatherbit": {
             "provider_name": "WeatherBit",
-            "api_key": "44da1e2a84474c839cda4390805e00ab",
+            "api_key": WEATHER_BIT_API_KEY,
         },
         "tomorrowio": {
             "provider_name": "TomorrowIO",
-            "api_key": "poQonEqbXdnof2EXxQvScAZ1ty3YLAEo",
+            "api_key": TOMORROW_IO_API_KEY,
         },
         "apininjas": {
-            "provider_name": "API Ninjas",
-            "api_key": "Mp88VEYJ1gE4vkS1gt23KQ==fKvvb7b69korttTS",
+            "provider_name": "ApiNinjas",
+            "api_key": API_NINJAS_API_KEY,
         },
     }

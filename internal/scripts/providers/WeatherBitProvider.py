@@ -1,14 +1,11 @@
 import requests
 import logging
+import time
 
 from typing import Dict, Any, List
 from .base.ProviderAdapter import ProviderAdapter
 
 class WeatherBitProvider(ProviderAdapter):
-
-    """
-    Example: https://api.weatherbit.io/v2.0/forecast/daily?city={city}&key={API key}
-    """
 
     def __init__(self, api_key: str, countries: List[Dict]):
         self.api_key = api_key
@@ -31,7 +28,7 @@ class WeatherBitProvider(ProviderAdapter):
                 data = response.json()
                 logging.info(f"Response from WeatherBitProvider provider for country {country['country_name']}")
                 response_data.append(data)
-
+                time.sleep(2)
             return response_data
         except Exception as e:
             logging.error(f"Error occurred while fetching forecast from WeatherBitProvider provider: {e}")

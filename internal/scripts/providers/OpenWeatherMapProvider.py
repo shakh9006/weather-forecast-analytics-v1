@@ -1,14 +1,11 @@
 import requests
 import logging
+import time
 
 from typing import Dict, Any, List
 from .base.ProviderAdapter import ProviderAdapter
 
 class OpenWeatherMapProvider(ProviderAdapter):
-
-    """
-    Example: https://api.openweathermap.org/data/2.5/forecast?lat={lat}&lon={lon}&appid={API key}&units=metric&lang=en
-    """
 
     def __init__(self, api_key: str, countries: List[Dict]):
         self.api_key = api_key
@@ -34,7 +31,7 @@ class OpenWeatherMapProvider(ProviderAdapter):
                 data = response.json()
                 logging.info(f"Response from OpenWeatherMap provider for country {country['country_name']}")
                 response_data.append(data)
-
+                time.sleep(2)
             return response_data
         except Exception as e:
             logging.error(f"Error occurred while fetching forecast from OpenWeatherMap provider: {e}")

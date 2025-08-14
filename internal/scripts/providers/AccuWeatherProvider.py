@@ -1,14 +1,11 @@
 import requests
 import logging
+import time
 
 from typing import Dict, Any, List
 from .base.ProviderAdapter import ProviderAdapter
 
 class AccuWeatherProvider(ProviderAdapter):
-
-    """
-    Example: https://dataservice.accuweather.com/forecasts/v1/daily/5day/{city_code}
-    """
 
     def __init__(self, api_key: str, countries: List[Dict]):
         self.api_key = api_key
@@ -33,7 +30,7 @@ class AccuWeatherProvider(ProviderAdapter):
                 data = response.json()
                 logging.info(f"Response from AccuWeather provider for country {country['country_name']}")
                 response_data.append(data)
-
+                time.sleep(2)
             return response_data
         except Exception as e:
             logging.error(f"Error occurred while fetching forecast from AccuWeather provider: {e}")

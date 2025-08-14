@@ -27,3 +27,10 @@ DEFAULT_ARGS = {
     'retries': 3,
     'retry_delay': timedelta(hours=1),
 }
+
+# Providers
+OPEN_WEATHER_MAP_API_KEY = os.getenv("OPEN_WEATHER_MAP_API_KEY")
+ACCU_WEATHER_API_KEY = os.getenv("ACCU_WEATHER_API_KEY")
+WEATHER_BIT_API_KEY = os.getenv("WEATHER_BIT_API_KEY")
+TOMORROW_IO_API_KEY = os.getenv("TOMORROW_IO_API_KEY")
+API_NINJAS_API_KEY = os.getenv("API_NINJAS_API_KEY")

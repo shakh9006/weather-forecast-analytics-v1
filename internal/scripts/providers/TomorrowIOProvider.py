@@ -1,15 +1,11 @@
 import requests
 import logging
+import time
 
 from typing import Dict, Any, List
 from .base.ProviderAdapter import ProviderAdapter
 
 class TomorrowIOProvider(ProviderAdapter):
-
-    """
-    Example: https://api.tomorrow.io/v4/weather/forecast?location=new%20york&timesteps=1d&apikey=poQonEqbXdnof2EXxQvScAZ1ty3YLAEo
-    """
-
     def __init__(self, api_key: str, countries: List[Dict]):
         self.api_key = api_key
         self.countries = countries
@@ -32,7 +28,7 @@ class TomorrowIOProvider(ProviderAdapter):
                 data = response.json()
                 logging.info(f"Response from TomorrowIO provider for country {country['country_name']}")
                 response_data.append(data)
-
+                time.sleep(2)
             return response_data
         except Exception as e:
             logging.error(f"Error occurred while fetching forecast from TomorrowIO provider: {e}")
