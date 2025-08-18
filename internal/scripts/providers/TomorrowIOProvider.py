@@ -6,7 +6,8 @@ from typing import Dict, Any, List
 from .base.ProviderAdapter import ProviderAdapter
 
 class TomorrowIOProvider(ProviderAdapter):
-    def __init__(self, api_key: str, countries: List[Dict]):
+    def __init__(self, provider_name: str, api_key: str, countries: List[Dict]):
+        self.provider_name = provider_name
         self.api_key = api_key
         self.countries = countries
 
@@ -58,4 +59,10 @@ class TomorrowIOProvider(ProviderAdapter):
             logging.error(f"Error occurred while fetching current weather from TomorrowIO provider: {e}")
             return []
 
-    
+    def process_forecast(self, start_date: str, end_date: str) -> None:
+        logging.info(f"Processing forecast from TomorrowIO provider for {start_date} to {end_date}")
+        try:
+            return None
+        except Exception as e:
+            logging.error(f"Error processing forecast from TomorrowIO provider: {e}")
+            return None

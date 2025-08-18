@@ -15,11 +15,11 @@ from scripts.storage.get_countries import get_countries
 from scripts.storage.get_providers import get_providers
 from scripts.providers.ProviderFactory import ProviderFactory
 
-DAG_ID = "raw_from_api_to_s3"
-SHORT_DESC = "Raw from API to S3"
+DAG_ID = "extract_raw_from_api_to_s3"
+SHORT_DESC = "Extract raw from API to S3"
 TAGS = ["api", "s3", "raw", "ods"]
 
-def raw_from_api_to_s3_handler(**context):    
+def extract_raw_from_api_to_s3_handler(**context):    
     start_date, end_date = get_dates(**context)
     start_date_str = start_date.strftime("%Y-%m-%d")
     end_date_str = end_date.strftime("%Y-%m-%d")
@@ -29,7 +29,7 @@ def raw_from_api_to_s3_handler(**context):
     provider_factory = ProviderFactory(providers, countries)
     provider_factory.run_all_providers(start_date_str, end_date_str)
 
-    logging.info(f"Raw from API to S3: {start_date_str} - {end_date_str}")
+    logging.info(f"Extract raw from API to S3: {start_date_str} - {end_date_str}")
 
 dag = DAG(
     dag_id=DAG_ID,
@@ -57,12 +57,12 @@ with dag:
     #     mode="poke",
     # )
 
-    raw_from_api_to_s3 = PythonOperator(
-        task_id="raw_from_api_to_s3",
-        python_callable=raw_from_api_to_s3_handler,
+    extract_raw_from_api_to_s3 = PythonOperator(
+        task_id="extract_raw_from_api_to_s3",
+        python_callable=extract_raw_from_api_to_s3_handler,
     )
 
     end = EmptyOperator(task_id="end")
 
     # sensor_on_init_database
-    start >> raw_from_api_to_s3 >> end
+    start >> extract_raw_from_api_to_s3 >> end

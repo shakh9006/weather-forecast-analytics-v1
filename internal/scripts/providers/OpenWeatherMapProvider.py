@@ -1,13 +1,18 @@
 import requests
 import logging
 import time
+import pandas as pd
 
 from typing import Dict, Any, List
 from .base.ProviderAdapter import ProviderAdapter
 
+from scripts.pandas_process import parse_openweathermap_forecast, load_forceast_to_postgres
+from scripts.minio_process import read_from_minio
+
 class OpenWeatherMapProvider(ProviderAdapter):
 
-    def __init__(self, api_key: str, countries: List[Dict]):
+    def __init__(self, provider_name: str, api_key: str, countries: List[Dict]):
+        self.provider_name = provider_name
         self.api_key = api_key
         self.countries = countries
 
@@ -16,6 +21,10 @@ class OpenWeatherMapProvider(ProviderAdapter):
         try:
             response_data = []
             api_url = "https://api.openweathermap.org/data/2.5/forecast"
+
+            """
+                https://api.openweathermap.org/data/2.5/forecast?lat=30.0444&lon=31.2357&apikey=3bda580d6ee8a9aed19d1c4b1e0578db
+            """
 
             for country in self.countries:
                 params = {
@@ -58,4 +67,16 @@ class OpenWeatherMapProvider(ProviderAdapter):
             logging.error(f"Error occurred while fetching current weather from OpenWeatherMap provider: {e}")
             return []
 
-    
+    def process_forecast(self, start_date: str, end_date: str) -> None:
+        logging.info(f"Parsing forecast from OpenWeatherMap provider for {start_date} to {end_date}")
+        try:
+            file_name = f"{self.provider_name}_{start_date}_{end_date}_00-00-00.gz.parquet"
+            object_path = f"raw/weather_forecast/{file_name}"
+            logging.info(f"Looking for file: {object_path}")
+            parquet_data = read_from_minio(object_path, self.provider_name, "weather_forecast")
+            df = parse_openweathermap_forecast(parquet_data)
+            # load_forceast_to_postgres(df)
+            return None
+        except Exception as e:
+            logging.error(f"Error parsing forecast from OpenWeatherMap provider: {e}")
+            return None

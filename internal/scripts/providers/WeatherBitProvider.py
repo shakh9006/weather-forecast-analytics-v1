@@ -5,11 +5,19 @@ import time
 from typing import Dict, Any, List
 from .base.ProviderAdapter import ProviderAdapter
 
+from scripts.pandas_process import parse_weatherbit_forecast, load_forceast_to_postgres
+from scripts.minio_process import read_from_minio
+
 class WeatherBitProvider(ProviderAdapter):
 
-    def __init__(self, api_key: str, countries: List[Dict]):
+    def __init__(self, provider_name: str, api_key: str, countries: List[Dict]):
+        self.provider_name = provider_name
         self.api_key = api_key
         self.countries = countries
+
+        """
+            https://api.weatherbit.io/v2.0/forecast/daily?city=Moscow&key=44da1e2a84474c839cda4390805e00ab&days=5
+        """
 
     def fetch_forecast(self, start_date: str, end_date: str) -> List[Any]:
         logging.info(f"Fetching forecast from WeatherBitProvider provider for {start_date} to {end_date}")
@@ -21,6 +29,7 @@ class WeatherBitProvider(ProviderAdapter):
                 params = {
                     "key": self.api_key,
                     "city": country["city"],
+                    "days": 5,
                 }
 
                 response = requests.get(api_url, params=params)
@@ -59,4 +68,16 @@ class WeatherBitProvider(ProviderAdapter):
             logging.error(f"Error occurred while fetching current weather from WeatherBitProvider provider: {e}")
             return []
 
-    
+    def process_forecast(self, start_date: str, end_date: str) -> None:
+        logging.info(f"Parsing forecast from WeatherBit provider for {start_date} to {end_date}")
+        try:
+            file_name = f"{self.provider_name}_{start_date}_{end_date}_00-00-00.gz.parquet"
+            object_path = f"raw/weather_forecast/{file_name}"
+            logging.info(f"Looking for file: {object_path}")
+            parquet_data = read_from_minio(object_path, self.provider_name, "weather_forecast")
+            df = parse_weatherbit_forecast(parquet_data)
+            load_forceast_to_postgres(df)
+            return None
+        except Exception as e:
+            logging.error(f"Error parsing forecast from WeatherBit provider: {e}")
+            return None

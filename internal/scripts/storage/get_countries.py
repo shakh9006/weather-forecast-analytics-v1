@@ -19,15 +19,6 @@ def get_countries():
             "region": "Asia (Central)",
         },
         {
-            "country_name": "Egypt",
-            "city": "Cairo",
-            "country_code": "EG",
-            "city_code": "CAI",
-            "latitude": 30.0444,
-            "longitude": 31.2357,
-            "region": "Africa",
-        },
-        {
             "country_name": "Germany",
             "city": "Berlin",
             "country_code": "DE",
@@ -35,15 +26,6 @@ def get_countries():
             "latitude": 52.5200,
             "longitude": 13.4050,
             "region": "Europe",
-        },
-        {
-            "country_name": "Brazil",
-            "city": "Brasília",
-            "country_code": "BR",
-            "city_code": "BSB",
-            "latitude": -15.7939,
-            "longitude": -47.8828,
-            "region": "South America",
         },
         {
             "country_name": "United States",
@@ -55,3 +37,17 @@ def get_countries():
             "region": "North America",
         },
     ]
+
+def get_country_by_location(latitude: float, longitude: float):
+    countries = get_countries()
+    for country in countries:
+        if round(country["latitude"], 2) == round(float(latitude), 2) and round(country["longitude"], 2) == round(float(longitude), 2):
+            return country
+    return None
+
+def get_country_by_city(city_name: str):
+    countries = get_countries()
+    for country in countries:
+        if country["city"] == city_name:
+            return country
+    return None
