@@ -39,19 +39,35 @@ def create_tables(conn):
     try:
         cursor = conn.cursor()
         cursor.execute("""
-            CREATE TABLE IF NOT EXISTS ods.ods_weather_forecast (
-              ods_id SERIAL PRIMARY KEY,
-              service_name VARCHAR(255) NOT NULL,
+            CREATE TABLE IF NOT EXISTS ods.weather_forecast (
+              forecast_id SERIAL PRIMARY KEY,
+              provider VARCHAR(255) NOT NULL,
               city_name VARCHAR(255) NOT NULL,
-              country VARCHAR(255) NOT NULL,
+              country_name VARCHAR(255) NOT NULL,
               latitude FLOAT NOT NULL,
               longitude FLOAT NOT NULL,
-              temp_min FLOAT NOT NULL,
-              temp_max FLOAT NOT NULL,
-              precipitation FLOAT NOT NULL,
+              avg_temp FLOAT NOT NULL,
+              min_temp FLOAT NOT NULL,
+              max_temp FLOAT NOT NULL,
               wind_speed FLOAT NOT NULL,
               humidity FLOAT NOT NULL,
               forecast_date DATE NOT NULL,
+              load_date DATE NOT NULL,
+              created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
+            );
+                       
+            CREATE TABLE IF NOT EXISTS ods.weather_actual (
+              actual_id SERIAL PRIMARY KEY,
+              provider VARCHAR(255) NOT NULL,
+              city_name VARCHAR(255) NOT NULL,
+              country_name VARCHAR(255) NOT NULL,
+              latitude FLOAT NOT NULL,
+              longitude FLOAT NOT NULL,
+              avg_temp FLOAT NOT NULL,
+              min_temp FLOAT NOT NULL,
+              max_temp FLOAT NOT NULL,
+              wind_speed FLOAT NOT NULL,
+              humidity FLOAT NOT NULL,
               created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
             );
         """)

@@ -4,6 +4,9 @@ import os
 
 load_dotenv('/opt/airflow/.env')
 
+# Database Schemas
+ODS_SCHEMA = 'ods'
+
 # MINIO S3
 MINIO_ENDPOINT = os.getenv("MINIO_ENDPOINT", "localhost:9000")
 MINIO_BUCKET = os.getenv("MINIO_BUCKET")
@@ -30,7 +33,6 @@ DEFAULT_ARGS = {
 
 # Providers
 OPEN_WEATHER_MAP_API_KEY = os.getenv("OPEN_WEATHER_MAP_API_KEY")
-ACCU_WEATHER_API_KEY = os.getenv("ACCU_WEATHER_API_KEY")
 WEATHER_BIT_API_KEY = os.getenv("WEATHER_BIT_API_KEY")
 TOMORROW_IO_API_KEY = os.getenv("TOMORROW_IO_API_KEY")
 API_NINJAS_API_KEY = os.getenv("API_NINJAS_API_KEY")

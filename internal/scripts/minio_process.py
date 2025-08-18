@@ -1,7 +1,9 @@
 import io
 import sys
 import logging
+import pandas as pd
 
+from typing import Optional
 from minio import Minio
 
 sys.path.append("/opt/airflow/internal")
@@ -15,6 +17,7 @@ from project_config.config import (
 )
 
 def get_minio_client():
+    logging.info(f"Getting minio client for {MINIO_ENDPOINT}")
     return Minio(
         MINIO_ENDPOINT,
         access_key=MINIO_ACCESS_KEY,
@@ -22,7 +25,7 @@ def get_minio_client():
         secure=MINIO_SECURE
     )
 
-def save_to_minio(df, start_date, end_date, provider_name, prefix):
+def save_to_minio(df: pd.DataFrame, start_date: str, end_date: str, provider_name: str, prefix: str) -> Optional[str]:
     logging.info(f"Saving DataFrame to MinIO for date: {start_date} to {end_date}")
 
     try:
@@ -54,4 +57,27 @@ def save_to_minio(df, start_date, end_date, provider_name, prefix):
         return object_path
     except Exception as e:
         logging.error(f"Error occurred while saving DataFrame to MinIO: {e}")
+        return None
+    
+def read_from_minio(object_path: str, provider_name: str, prefix: str) -> Optional[io.BytesIO]:
+    logging.info(f"Reading data for {provider_name} and {prefix} from MinIO for file: {object_path}")
+
+    try:
+        client = get_minio_client()
+
+        response = client.get_object(MINIO_BUCKET, object_path)
+
+        logging.info(f"Response: {response}")
+
+        if not response:
+            logging.error(f"File {object_path} not found for {provider_name} and {prefix}")
+            return None
+
+        parquet_data = io.BytesIO(response.read())
+
+        logging.info(f"Successfully loaded from {object_path} for {provider_name} and {prefix}")
+        
+        return parquet_data
+    except Exception as e:
+        logging.error(f"Error occurred while reading from MinIO for {provider_name} and {prefix}: {e}")
         return None
