@@ -4,7 +4,7 @@ import logging
 from datetime import datetime
 from airflow import DAG
 from airflow.operators.python import PythonOperator
-# from airflow.sensors.external_task import ExternalTaskSensor
+from airflow.sensors.external_task import ExternalTaskSensor
 from airflow.operators.empty import EmptyOperator
 
 sys.path.append("/opt/airflow/internal")
@@ -25,18 +25,18 @@ def load_raw_from_s3_to_pg_handler(**context):
 
     logging.info(f"Load raw from S3 to PG: {start_date_str} - {end_date_str}")
 
-
     providers = get_providers()
     provider_factory = ProviderFactory(providers)
     provider_factory.load_forecast_from_s3_to_pg(start_date_str, end_date_str)
+    provider_factory.load_current_weather_from_s3_to_pg(start_date_str, end_date_str)
 
 
 dag = DAG(
     dag_id=DAG_ID,
     default_args=DEFAULT_ARGS,
     schedule="0 8 * * *",
-    catchup=False,
-    start_date=datetime(2025, 8, 12),
+    catchup=True,
+    start_date=datetime(2025, 8, 18),
     description=SHORT_DESC,
     tags=TAGS,
     max_active_runs=1,
@@ -47,15 +47,15 @@ with dag:
 
     start = EmptyOperator(task_id="start")
 
-    # sensor_on_init_database = ExternalTaskSensor(
-    #     task_id="sensor_on_init_database",
-    #     external_dag_id="init_database",
-    #     external_task_id="end",
-    #     allowed_states=['success'],
-    #     timeout=360000,
-    #     poke_interval=60,
-    #     mode="poke",
-    # )
+    sensor_on_extract_raw_from_api_to_s3 = ExternalTaskSensor(
+        task_id="sensor_on_extract_raw_from_api_to_s3",
+        external_dag_id="extract_raw_from_api_to_s3",
+        external_task_id="end",
+        allowed_states=['success'],
+        timeout=360000,
+        poke_interval=60,
+        mode="poke",
+    )
 
     load_raw_from_s3_to_pg = PythonOperator(
         task_id="load_raw_from_s3_to_pg",
@@ -64,5 +64,4 @@ with dag:
 
     end = EmptyOperator(task_id="end")
 
-    # sensor_on_init_database
-    start >> load_raw_from_s3_to_pg >> end
+    start >> sensor_on_extract_raw_from_api_to_s3 >> load_raw_from_s3_to_pg >> end

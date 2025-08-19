@@ -17,3 +17,8 @@ class ProviderAdapter(ABC):
     def process_forecast(self, start_date: str, end_date: str) -> None:
         """Process forecast data from provider."""
         pass
+
+    @abstractmethod
+    def process_current_weather(self, start_date: str, end_date: str) -> None:
+        """Process current weather data from provider."""
+        pass
