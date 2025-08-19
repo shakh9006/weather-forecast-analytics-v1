@@ -68,6 +68,7 @@ def create_tables(conn):
               max_temp FLOAT NOT NULL,
               wind_speed FLOAT NOT NULL,
               humidity FLOAT NOT NULL,
+              load_date DATE NOT NULL,    
               created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
             );
         """)

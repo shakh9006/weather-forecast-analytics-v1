@@ -5,7 +5,7 @@ import time
 from typing import Dict, Any, List
 from .base.ProviderAdapter import ProviderAdapter
 
-from scripts.pandas_process import parse_weatherbit_forecast, load_forceast_to_postgres
+from scripts.pandas_process import parse_weatherbit_forecast, load_forceast_to_postgres, parse_weatherbit_current_weather, load_current_weather_to_postgres
 from scripts.minio_process import read_from_minio
 
 class WeatherBitProvider(ProviderAdapter):
@@ -14,10 +14,6 @@ class WeatherBitProvider(ProviderAdapter):
         self.provider_name = provider_name
         self.api_key = api_key
         self.countries = countries
-
-        """
-            https://api.weatherbit.io/v2.0/forecast/daily?city=Moscow&key=44da1e2a84474c839cda4390805e00ab&days=5
-        """
 
     def fetch_forecast(self, start_date: str, end_date: str) -> List[Any]:
         logging.info(f"Fetching forecast from WeatherBitProvider provider for {start_date} to {end_date}")
@@ -52,9 +48,8 @@ class WeatherBitProvider(ProviderAdapter):
             for country in self.countries:
                 params = {
                     "key": self.api_key,
-                    "lat": country["latitude"],
-                    "lon": country["longitude"],
-                    "include": "daily",
+                    "city": country["city"],
+                    "days": 1,
                 }
 
                 response = requests.get(api_url, params=params)
@@ -75,9 +70,23 @@ class WeatherBitProvider(ProviderAdapter):
             object_path = f"raw/weather_forecast/{file_name}"
             logging.info(f"Looking for file: {object_path}")
             parquet_data = read_from_minio(object_path, self.provider_name, "weather_forecast")
-            df = parse_weatherbit_forecast(parquet_data)
+            df = parse_weatherbit_forecast(parquet_data, start_date)
             load_forceast_to_postgres(df)
             return None
         except Exception as e:
             logging.error(f"Error parsing forecast from WeatherBit provider: {e}")
+            return None
+        
+    def process_current_weather(self, start_date: str, end_date: str) -> None:
+        logging.info(f"Parsing current weather from WeatherBit provider for {start_date} to {end_date}")
+        try:
+            file_name = f"{self.provider_name}_{start_date}_{end_date}_00-00-00.gz.parquet"
+            object_path = f"raw/weather_current/{file_name}"
+            logging.info(f"Looking for file: {object_path}")
+            parquet_data = read_from_minio(object_path, self.provider_name, "weather_current")
+            df = parse_weatherbit_current_weather(parquet_data, start_date)
+            load_current_weather_to_postgres(df)
+            return None
+        except Exception as e:
+            logging.error(f"Error parsing current weather from WeatherBit provider: {e}")
             return None

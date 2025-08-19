@@ -47,15 +47,15 @@ with dag:
 
     start = EmptyOperator(task_id="start")
 
-    # sensor_on_init_database = ExternalTaskSensor(
-    #     task_id="sensor_on_init_database",
-    #     external_dag_id="init_database",
-    #     external_task_id="end",
-    #     allowed_states=['success'],
-    #     timeout=360000,
-    #     poke_interval=60,
-    #     mode="poke",
-    # )
+    sensor_on_init_database = ExternalTaskSensor(
+        task_id="sensor_on_init_database",
+        external_dag_id="init_database",
+        external_task_id="end",
+        allowed_states=['success'],
+        timeout=360000,
+        poke_interval=60,
+        mode="poke",
+    )
 
     extract_raw_from_api_to_s3 = PythonOperator(
         task_id="extract_raw_from_api_to_s3",
@@ -64,5 +64,4 @@ with dag:
 
     end = EmptyOperator(task_id="end")
 
-    # sensor_on_init_database
-    start >> extract_raw_from_api_to_s3 >> end
+    start >> sensor_on_init_database >> extract_raw_from_api_to_s3 >> end
