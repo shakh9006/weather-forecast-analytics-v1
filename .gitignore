@@ -208,3 +208,9 @@ __marimo__/
 
 logs/
 data/
+
+# dbt
+dbt/logs/
+dbt/weather_forecast_analytics/target/
+dbt/profiles.yml
+postgres_data/

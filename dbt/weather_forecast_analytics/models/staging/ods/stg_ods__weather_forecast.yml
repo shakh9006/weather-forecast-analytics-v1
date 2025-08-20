@@ -1,0 +1,42 @@
+version: 2
+
+models:
+  - name: stg_ods__weather_forecast
+    description: This model cleans up weather forecast data
+    columns:
+      - name: city_name
+        description: City name
+        data_tests:
+          - not_null
+      - name: provider
+        description: Provider
+        data_tests:
+          - not_null
+      - name: load_date
+        description: Load date
+        data_tests:
+          - not_null
+      - name: forecast_date
+        description: Forecast date
+        data_tests:
+          - not_null
+      - name: avg_temp
+        description: Avarage Temperature
+        data_tests:
+          - not_null
+      - name: min_temp
+        description: Minimum Temperature
+        data_tests:
+          - not_null
+      - name: max_temp
+        description: Maximum Temperature
+        data_tests:
+          - not_null
+      - name: humidity
+        description: Humidity
+        data_tests:
+          - not_null
+      - name: wind_speed
+        description: Wind Speed
+        data_tests:
+          - not_null

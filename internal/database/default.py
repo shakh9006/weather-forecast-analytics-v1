@@ -26,6 +26,7 @@ def create_schemas(conn):
         cursor = conn.cursor()
         cursor.execute("""
             CREATE SCHEMA IF NOT EXISTS ods;
+            CREATE SCHEMA IF NOT EXISTS analytics;
         """)
         conn.commit()
         logging.info("Schemas created successfully")

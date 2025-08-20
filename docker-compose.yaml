@@ -78,6 +78,7 @@ x-airflow-common: &airflow-common
     - ${AIRFLOW_PROJ_DIR:-.}/internal/database:/opt/airflow/internal/database
     - ${AIRFLOW_PROJ_DIR:-.}/internal/scripts:/opt/airflow/internal/scripts
     - ${AIRFLOW_PROJ_DIR:-.}/.env:/opt/airflow/.env
+    - /var/run/docker.sock:/var/run/docker.sock
   user: '${AIRFLOW_UID:-50000}:0'
   depends_on: &airflow-common-depends-on
     redis:
@@ -93,6 +94,8 @@ services:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
       POSTGRES_DB: postgres
+    volumes:
+      - ./postgres_data:/var/lib/postgresql/data
     restart: always
     ports:
       - '5432:5432'
@@ -110,6 +113,19 @@ services:
       - '9000:9000'
       - '9001:9001'
 
+  dbt:
+    container_name: dbt_container
+    image: ghcr.io/dbt-labs/dbt-postgres:1.9.latest
+    depends_on:
+      - postgres_dwh
+    volumes:
+      - ./dbt/weather_forecast_analytics:/usr/app
+      - ./dbt:/root/.dbt
+    environment:
+      DBT_PROFILES_DIR: /root/.dbt
+    working_dir: /usr/app
+    command: run
+
   postgres:
     image: postgres:13
     environment:
@@ -124,6 +140,22 @@ services:
       retries: 5
       start_period: 5s
     restart: always
+
+  metabase:
+    image: metabase/metabase:latest
+    ports:
+      - '3000:3000'
+    environment:
+      MB_DB_TYPE: postgres
+      MB_DB_HOST: postgres_dwh
+      MB_DB_PORT: 5432
+      MB_DB_USER: postgres
+      MB_DB_PASS: postgres
+      MB_DB_DBNAME: postgres
+    depends_on:
+      - postgres_dwh
+    volumes:
+      - metabase_data:/opt/airflow/metabase-data
 
   redis:
     # Redis is limited to 7.2-bookworm due to licencing change
@@ -365,3 +397,5 @@ services:
 
 volumes:
   postgres-db-volume:
+  postgres_data:
+  metabase_data:
