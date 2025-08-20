@@ -1,0 +1,39 @@
+version: 2
+
+models:
+  - name: forecast_accuracy
+    description: 'Анализ точности прогнозов погоды по провайдерам за последние 3 дня в формате pivot-таблицы'
+    columns:
+      - name: provider
+        description: 'Название провайдера погодных данных'
+        data_tests:
+          - not_null
+          - accepted_values:
+              values: ['openweathermap', 'weatherbit']
+
+      - name: city_name
+        description: 'Название города'
+        data_tests:
+          - not_null
+          - accepted_values:
+              values: ['Tokyo', 'Tashkent', 'Berlin', 'New York']
+
+      - name: three_days_ago
+        description: 'Данные за 3 дня назад в формате: фактическая_температура (прогнозируемая_температура) точность%'
+
+      - name: two_days_ago
+        description: 'Данные за 2 дня назад в формате: фактическая_температура (прогнозируемая_температура) точность%'
+
+      - name: one_day_ago
+        description: 'Данные за 1 день назад в формате: фактическая_температура (прогнозируемая_температура) точность%'
+
+      - name: overall_accuracy
+        description: 'Общая точность провайдера в процентах за все дни'
+        data_tests:
+          - not_null
+
+    data_tests:
+      - dbt_utils.unique_combination_of_columns:
+          combination_of_columns:
+            - provider
+            - city_name
