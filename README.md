@@ -14,7 +14,7 @@ This project implements a complete data pipeline that:
 
 ## Architecture
 
-![Architecture Diagram](documentation/image-2.png.png)
+![Architecture Diagram](documentation/image-2.png)
 
 The pipeline follows a modern data engineering architecture:
 
@@ -62,7 +62,7 @@ Accuracy is calculated as: `100 - (|forecast_temp - actual_temp| * 10)`
 
 ## Sample Results
 
-![Forecast Accuracy Results](documentation/image-1.png.png)
+![Forecast Accuracy Results](documentation/image-1.png)
 
 The analysis shows forecast accuracy for different cities and providers over the last 3 days, helping to identify which weather services provide the most reliable predictions.
 

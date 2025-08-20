@@ -214,3 +214,5 @@ dbt/logs/
 dbt/weather_forecast_analytics/target/
 dbt/profiles.yml
 postgres_data/
+
+.idea/
