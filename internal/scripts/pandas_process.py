@@ -37,6 +37,14 @@ def parse_openweathermap_forecast(parquet_data: io.BytesIO, start_date: str) -> 
         coord = row['city']['coord']
         city = row['city']['name']
 
+        country = get_country_by_location(coord['lat'], coord['lon'])
+
+        if not country:
+            country = get_country_by_city(city)
+
+        if not country:
+            continue
+
         raw_data = row['list']
         weather_list = pd.DataFrame(raw_data.tolist())
         weather_list = weather_list[['main', 'wind', 'dt_txt']]
@@ -57,21 +65,15 @@ def parse_openweathermap_forecast(parquet_data: io.BytesIO, start_date: str) -> 
             humidity=("humidity", "mean")
         ).reset_index()
 
-        country = get_country_by_location(coord['lat'], coord['lon'])
         daily_stats['avg_temp'] = kelvin_to_celsius(daily_stats['avg_temp'])
         daily_stats['min_temp'] = kelvin_to_celsius(daily_stats['min_temp'])
         daily_stats['max_temp'] = kelvin_to_celsius(daily_stats['max_temp'])
-        daily_stats['latitude'] = coord['lat']
-        daily_stats['longitude'] = coord['lon']
         daily_stats['load_date'] = start_date
         daily_stats['provider'] = 'openweathermap'
-
-        if country:
-            daily_stats['country_name'] = country['country_name']
-            daily_stats['city_name'] = country['city']
-        else:
-            daily_stats['country_name'] = 'Unknown'
-            daily_stats['city_name'] = city
+        daily_stats['country_name'] = country['country_name']
+        daily_stats['city_name'] = country['city']
+        daily_stats['latitude'] = country['latitude']
+        daily_stats['longitude'] = country['longitude']
 
         daily_stats_list.append(daily_stats)
 
@@ -96,6 +98,14 @@ def parse_openweathermap_current_weather(parquet_data: io.BytesIO, start_date: s
     for _, row in df.iterrows():
         coord = row['coord']
 
+        country = get_country_by_location(coord['lat'], coord['lon'])
+
+        if not country:
+            country = get_country_by_city(row['name'])
+        
+        if not country:
+            continue
+
         daily_stats = pd.Series(dtype=object)
 
         daily_stats['avg_temp'] = kelvin_to_celsius(row['main']['temp'])
@@ -105,21 +115,10 @@ def parse_openweathermap_current_weather(parquet_data: io.BytesIO, start_date: s
         daily_stats['humidity'] = row['main']['humidity']
         daily_stats['load_date'] = start_date
         daily_stats['provider'] = 'openweathermap'
-
-        country = get_country_by_location(coord['lat'], coord['lon'])
-        if not country:
-            country = get_country_by_city(row['name'])
-
-        if country:
-            daily_stats['country_name'] = country['country_name']
-            daily_stats['city_name'] = country['city']
-            daily_stats['latitude'] = country['latitude']
-            daily_stats['longitude'] = country['longitude']
-        else:
-            daily_stats['country_name'] = 'Unknown'
-            daily_stats['city_name'] = 'Unknown'
-            daily_stats['latitude'] = coord['lat']
-            daily_stats['longitude'] = coord['lon']
+        daily_stats['country_name'] = country['country_name']
+        daily_stats['city_name'] = country['city']
+        daily_stats['latitude'] = country['latitude']
+        daily_stats['longitude'] = country['longitude']
 
         daily_stats_list.append(daily_stats)
 
@@ -145,6 +144,13 @@ def parse_weatherbit_forecast(parquet_data: io.BytesIO, start_date: str) -> pd.D
         lat = row['lat']
         lon = row['lon']
 
+        country = get_country_by_location(lat, lon)
+        if not country:
+            country = get_country_by_city(city)
+
+        if not country:
+            continue
+
         raw_data = row['data']
         weather_list = pd.DataFrame(raw_data.tolist())
         weather_list = weather_list[['max_temp', 'min_temp', 'temp', 'datetime', 'wind_spd', 'rh']].rename(columns={
@@ -155,22 +161,10 @@ def parse_weatherbit_forecast(parquet_data: io.BytesIO, start_date: str) -> pd.D
         })
 
         weather_list["forecast_date"] = pd.to_datetime(weather_list["forecast_date"]).dt.strftime("%Y-%m-%d")    
-        country = get_country_by_location(lat, lon)
-
-        if not country:
-            country = get_country_by_city(city)
-
-        if country:
-            weather_list['country_name'] = country['country_name']
-            weather_list['city_name'] = country['city']
-            weather_list['latitude'] = country['latitude']
-            weather_list['longitude'] = country['longitude']
-        else:
-            weather_list['country_name'] = 'Unknown'
-            weather_list['city_name'] = 'Unknown'
-            weather_list['latitude'] = lat
-            weather_list['longitude'] = lon
-
+        weather_list['country_name'] = country['country_name']
+        weather_list['city_name'] = country['city']
+        weather_list['latitude'] = country['latitude']
+        weather_list['longitude'] = country['longitude']
         weather_list['load_date'] = start_date
         weather_list['provider'] = 'weatherbit'
 
@@ -199,6 +193,14 @@ def parse_weatherbit_current_weather(parquet_data: io.BytesIO, start_date: str) 
         lat = row['lat']
         lon = row['lon']
 
+        country = get_country_by_location(lat, lon)
+
+        if not country:
+            country = get_country_by_city(city)
+
+        if not country:
+            continue
+
         raw_data = row['data']
         weather_list = pd.DataFrame(raw_data.tolist())
         weather_list = weather_list[['max_temp', 'min_temp', 'temp', 'wind_spd', 'rh']].rename(columns={
@@ -207,22 +209,10 @@ def parse_weatherbit_current_weather(parquet_data: io.BytesIO, start_date: str) 
             'rh': 'humidity'
         })
 
-        country = get_country_by_location(lat, lon)
-
-        if not country:
-            country = get_country_by_city(city)
-
-        if country:
-            weather_list['country_name'] = country['country_name']
-            weather_list['city_name'] = country['city']
-            weather_list['latitude'] = country['latitude']
-            weather_list['longitude'] = country['longitude']
-        else:
-            weather_list['country_name'] = 'Unknown'
-            weather_list['city_name'] = 'Unknown'
-            weather_list['latitude'] = lat
-            weather_list['longitude'] = lon
-
+        weather_list['country_name'] = country['country_name']
+        weather_list['city_name'] = country['city']
+        weather_list['latitude'] = country['latitude']
+        weather_list['longitude'] = country['longitude']
         weather_list['load_date'] = start_date
         weather_list['provider'] = 'weatherbit'
 

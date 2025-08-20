@@ -1,0 +1,11 @@
+version: 2
+
+sources:
+  - name: ods
+    description: ODS
+    loader: Manual
+    database: postgres
+    schema: ods
+    tables:
+      - name: weather_forecast
+      - name: weather_actual

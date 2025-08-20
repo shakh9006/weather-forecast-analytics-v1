@@ -1,0 +1,12 @@
+version: 2
+
+models:
+  - name: dim_cities
+    description: 'Aggregates cities information.'
+
+    columns:
+      - name: city
+        description: 'Unique identifier for each city.'
+        data_tests:
+          - unique
+          - not_null

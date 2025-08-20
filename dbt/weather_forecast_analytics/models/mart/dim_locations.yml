@@ -1,0 +1,12 @@
+version: 2
+
+models:
+  - name: dim_locations
+    description: 'Aggregates locations provider information.'
+
+    columns:
+      - name: provider
+        description: 'Unique identifier for each provider.'
+        data_tests:
+          - unique
+          - not_null

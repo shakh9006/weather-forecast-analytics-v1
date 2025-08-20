@@ -15,6 +15,9 @@ class WeatherBitProvider(ProviderAdapter):
         self.api_key = api_key
         self.countries = countries
 
+    """
+        https://api.weatherbit.io/v2.0/forecast/daily?city=Tashkent&key=44da1e2a84474c839cda4390805e00ab&days=1
+    """
     def fetch_forecast(self, start_date: str, end_date: str) -> List[Any]:
         logging.info(f"Fetching forecast from WeatherBitProvider provider for {start_date} to {end_date}")
         try:
@@ -43,7 +46,7 @@ class WeatherBitProvider(ProviderAdapter):
         logging.info(f"Fetching current weather from WeatherBitProvider provider for {start_date} to {end_date}")
         try:
             response_data = []
-            api_url = "https://api.weatherbit.io/v2.0/current"
+            api_url = "https://api.weatherbit.io/v2.0/forecast/daily"
 
             for country in self.countries:
                 params = {
